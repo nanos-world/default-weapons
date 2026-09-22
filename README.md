@@ -21,8 +21,8 @@ local my_ak47 = AK47(Vector(0, 0, 300), Rotator())
 -- otherwise we could just attach to the bone/socket directly
 my_ak47:AddStaticMeshAttached("sight", "nanos-world::SM_T4_Sight", "", Vector(23, -0, 12))
 
--- Makes the FOV multiplier reduces by 0.35x when ADS (aiming)
-my_ak47.SightFOVMultiplier = 0.35
+-- Makes the FOV multiplier reduce by 0.35x when ADS (aiming)
+my_ak47:SetSightFOVMultiplier(0.35)
 
 -- Sets the ADS transform offset to fit the RedDot center position,
 -- each weapon will need a different offset to fit it's sight. AK47 + RedDot best fit is Z = -2
