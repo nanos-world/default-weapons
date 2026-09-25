@@ -1,64 +1,86 @@
-# nanos-world-weapons
+# Default Weapons
 
-This is a Package which contains a bunch of weapons Classes defined using meshes already included in nanos world Default Asset Pack.
+A collection of 32 ready-to-use weapons (rifles, SMGs, pistols, shotguns, snipers, vintage guns, melee and a grenade) built with the meshes already included in the nanos world Default Asset Pack. No extra downloads needed.
+
+Each weapon is fully configured with damage, recoil, sounds, animations, particles and magazine, and they all show up automatically in the [Sandbox](https://github.com/nanos-world/nanos-world-sandbox) Spawn Menu.
+
+![AK47 with reddot](https://i.imgur.com/K8qK3OG.png)
+
+
+## Available Weapons
+
+| Category | Classes |
+|---|---|
+| Rifles | `AK47`, `AK74U`, `AR4` (AR-15), `GE36` (Gewehr 36), `GE3` (Gewehr 3), `AK5C`, `SA80`, `ASVal`, `DC15S` |
+| SMGs | `AP5` (MP5), `SMG11` (MAC-10), `UMP45`, `P90` |
+| Pistols | `Glock`, `DesertEagle`, `M1911`, `Makarov` |
+| Shotguns | `Moss500`, `Ithaca37`, `Rem870`, `SPAS12` |
+| Sniper Rifles | `AWP` |
+| Vintage | `ColtPython`, `Lewis`, `Sten`, `BAR`, `StG44`, `M1Garand` |
+| Melee | `Knife`, `Crowbar`, `BaseballBat` |
+| Grenades | `G67` |
+
+
+## Installation
+
+Add it to the `packages_requirements` of your game-mode or package `Package.toml`:
+
+```toml
+packages_requirements = [
+    "default-weapons",
+]
+```
 
 
 ## Usage
 
+Every weapon is a global class that takes a location and a rotation (they are also available in the exported `NanosWorldWeapons` table):
+
 ```lua
-AK47(Vector(123, 456, 100), Rotator())
+-- Server side
+local ak47 = AK47(Vector(0, 0, 100), Rotator())
 ```
 
 
-## Full Example
+## Examples
+
+Give a weapon to a player's character:
 
 ```lua
--- Spawning the AK47
+local character = player:GetControlledCharacter()
+local weapon = DesertEagle(Vector(), Rotator())
+character:PickUp(weapon)
+```
+
+Attach a red dot sight and align it:
+
+```lua
 local my_ak47 = AK47(Vector(0, 0, 300), Rotator())
 
--- Adds a StaticMesh Attached with a RedDot mesh into AK47. As our AK47 model doesn't have a
--- bone at the correct location of the sights, we need to manually offset it to match the location,
--- otherwise we could just attach to the bone/socket directly
-my_ak47:AddStaticMeshAttached("sight", "nanos-world::SM_T4_Sight", "", Vector(23, -0, 12))
+-- The AK47 mesh has no sight socket, so we offset the red dot manually
+my_ak47:AddStaticMeshAttached("sight", "nanos-world::SM_T4_Sight", "", Vector(23, 0, 12))
 
--- Makes the FOV multiplier reduce by 0.35x when ADS (aiming)
+-- Zoom a bit more when aiming down sights
 my_ak47:SetSightFOVMultiplier(0.35)
 
--- Sets the ADS transform offset to fit the RedDot center position,
--- each weapon will need a different offset to fit it's sight. AK47 + RedDot best fit is Z = -2
+-- Align the camera with the red dot center (each weapon needs its own offset)
 my_ak47:SetSightTransform(Vector(0, 0, -2), Rotator(0, 0, 0))
 ```
 
-Note you can use any Static Mesh and attach to the weapon, also you can use any Skeletal Mesh and build you own weapon.
-
-
-## List of all available Weapons in this Package
-
-- AK47
-- AK74U
-- GE36
-- Glock
-- DesertEagle
-- AR4
-- Moss500
-- AP5
-- SMG11
-- ASVal
-- M1911
-- Makarov
-- UMP45
-- P90
-- GE3
-- AK5C
-- SA80
-- Ithaca37
-- Rem870
-- SPAS12
-- AWP
-
-
-## Images
-
-![AK47 with reddot](https://i.imgur.com/K8qK3OG.png)
-
 ![AK47 with reddot perfectly aligned](https://i.imgur.com/QeoHPBB.png)
+
+Create your own variant by inheriting from any weapon:
+
+```lua
+GoldenDeagle = DesertEagle.Inherit("GoldenDeagle", {
+	name = "Golden Deagle",
+	category = "pistols",
+})
+
+function GoldenDeagle:Constructor(location, rotation)
+	DesertEagle.Constructor(self, location, rotation)
+
+	self:SetDamage(200)
+	self:SetMaterialColorParameter("Tint", Color(1, 0.8, 0))
+end
+```
